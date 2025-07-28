@@ -1,0 +1,4 @@
+# Exclude generated HTML files from GitHub language stats
+**/build/** linguist-generated=true
+**/reports/** linguist-generated=true
+**/*.html linguist-generated=true

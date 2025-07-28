@@ -1,0 +1,67 @@
+[versions]
+agp = "8.11.1"
+androidxTestCore = "1.6.1"
+appcompat = "1.7.1"
+constraintlayout = "2.2.1"
+coreKtx = "1.16.0"
+coroutines = "1.10.2"
+espressoCore = "3.6.1"
+fragment = "1.8.8"
+fragmentTestingVersion = "1.8.8"
+junit = "4.13.2"
+junitKtx = "1.2.1"
+junitVersion = "1.2.1"
+kotlin = "2.2.0"
+lifecycle = "2.9.2"
+lifecycleRuntimeKtx = "2.9.2"
+material = "1.12.0"
+mockk = "1.14.5"
+okhttp = "5.1.0"
+recyclerview = "1.4.0"
+retrofit = "3.0.0"
+robolectric = "4.15.1"
+swiperefreshlayout = "1.1.0"
+truth = "1.4.4"
+
+[libraries]
+
+# --- Main Implementation Dependencies ---
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+
+# --- Unit Test Dependencies ---
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+mockk-agent = { module = "io.mockk:mockk-agent-jvm", version.ref = "mockk" }
+androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version = "2.2.0" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+androidxTestCore = { module = "androidx.test:core", version.ref = "androidxTestCore" }
+kotlintest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+
+# --- Android Instrumentation Test Dependencies ---
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxTestCore" }
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
+
+# --- Debug/Test Utilities ---
+fragment-testing = { module = "androidx.fragment:fragment-testing", version.ref = "fragmentTestingVersion" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

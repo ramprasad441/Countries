@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Countries</string>
+    <string name="name">Name</string>
+    <string name="country_code">Country Code</string>
+    <string name="region">Region</string>
+    <string name="capital">Capital</string>
+    <string name="scroll_to_top">Scroll to Top</string>
+</resources>
