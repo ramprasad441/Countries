@@ -41,7 +41,6 @@ import org.robolectric.annotation.Config
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
 class CountriesAdapterTest {
-
     private lateinit var adapter: CountriesAdapter
 
     @Before
@@ -51,10 +50,11 @@ class CountriesAdapterTest {
 
     @Test
     fun `submitList updates data and reflects correct item count and types`() {
-        val countries = listOf(
-            Countries(header = "A"),
-            Countries(name = "Albania", code = "AL", region = "Europe", capital = "Tirana")
-        )
+        val countries =
+            listOf(
+                Countries(header = "A"),
+                Countries(name = "Albania", code = "AL", region = "Europe", capital = "Tirana"),
+            )
 
         adapter.submitList(countries)
         shadowOf(Looper.getMainLooper()).idle()
@@ -88,7 +88,7 @@ class CountriesAdapterTest {
             CountriesHeaderListItemBinding.inflate(
                 inflater,
                 parent,
-                false
+                false,
             )
         } returns mockHeaderBinding
         every { CountriesListItemBinding.inflate(inflater, parent, false) } returns mockItemBinding
@@ -100,7 +100,6 @@ class CountriesAdapterTest {
         assertTrue(countryHolder is CountriesAdapter.CountriesViewHolder)
     }
 
-
     @Test
     fun `onBindViewHolder binds HeaderViewHolder with header data`() {
         val headerCountry = Countries(header = "A")
@@ -108,16 +107,18 @@ class CountriesAdapterTest {
         shadowOf(Looper.getMainLooper()).idle()
 
         val textView = mockk<TextView>()
-        val binding = object {
-            val countryHeader: TextView = textView
-        }
+        val binding =
+            object {
+                val countryHeader: TextView = textView
+            }
 
         // Use your real or test-specific ViewHolder using the test binding
-        val holder = object : RecyclerView.ViewHolder(textView) {
-            fun bind(countries: Countries) {
-                binding.countryHeader.text = countries.header
+        val holder =
+            object : RecyclerView.ViewHolder(textView) {
+                fun bind(countries: Countries) {
+                    binding.countryHeader.text = countries.header
+                }
             }
-        }
         val slot = slot<CharSequence>()
         every { textView.text = capture(slot) } just runs
 
@@ -152,7 +153,6 @@ class CountriesAdapterTest {
         spyk.onBindViewHolder(spykHolder, 0)
         verify { spykHolder.bind(country) }
     }
-
 
     @Test
     fun `binds CountriesViewHolder with null values`() {
@@ -191,11 +191,8 @@ class CountriesAdapterTest {
         sAdapter.bindViewHolder(countryHolder, 1)
     }
 
-
     @Test
     fun `covers both branches in bindViewHolder`() {
-
-
         val countries =
             Countries(name = "Albania", code = "AL", region = "Europe", capital = "Tirana")
 
@@ -211,13 +208,13 @@ class CountriesAdapterTest {
         verify { spykHolder.bind(countries) }
     }
 
-
     @Test
     fun `submitList updates item count`() {
-        val countries = listOf(
-            Countries(header = "A"),
-            Countries(name = "Albania", code = "AL", region = "Europe", capital = "Tirana")
-        )
+        val countries =
+            listOf(
+                Countries(header = "A"),
+                Countries(name = "Albania", code = "AL", region = "Europe", capital = "Tirana"),
+            )
 
         adapter.submitList(countries)
         shadowOf(Looper.getMainLooper()).idle() // instead of flushForegroundThreadScheduler()
@@ -226,7 +223,6 @@ class CountriesAdapterTest {
     }
 
     class CountriesDiffCallbackTest {
-
         private val diffCallback = CountriesDiffCallback
 
         @Test
@@ -291,14 +287,13 @@ class CountriesAdapterTest {
         }
     }
 
-    private fun Any.setPrivateField(field: String, value: Any) {
+    private fun Any.setPrivateField(
+        field: String,
+        value: Any,
+    ) {
         this::class.java.getDeclaredField(field).apply {
             this.isAccessible = true
             set(this@setPrivateField, value)
         }
     }
-
 }
-
-
-

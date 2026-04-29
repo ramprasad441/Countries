@@ -12,11 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.common.truth.Truth.assertThat
-import com.ramprasad.countries.ui.view.MainActivity
-import com.ramprasad.countries.ui.adapter.CountriesAdapter
-import com.ramprasad.countries.domain.model.ResponseState
 import com.ramprasad.countries.domain.model.Countries
-import com.ramprasad.countries.ui.view.CountriesFragment
+import com.ramprasad.countries.domain.model.ResponseState
+import com.ramprasad.countries.ui.adapter.CountriesAdapter
 import com.ramprasad.countries.ui.viewmodel.CountriesViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
@@ -51,7 +49,6 @@ import org.robolectric.shadows.ShadowToast
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
 class CountriesFragmentTest {
-
     @MockK
     private lateinit var viewModel: CountriesViewModel
 
@@ -83,8 +80,10 @@ class CountriesFragmentTest {
         every { adapter.getItemViewType(any()) } returns 0
 
         every { adapter.createViewHolder(any(), any()) } answers {
-            val view = LayoutInflater.from(fragment.requireContext())
-                .inflate(R.layout.simple_list_item_1, null, false)
+            val view =
+                LayoutInflater
+                    .from(fragment.requireContext())
+                    .inflate(R.layout.simple_list_item_1, null, false)
             object : RecyclerView.ViewHolder(view) {}
         }
 
@@ -93,21 +92,28 @@ class CountriesFragmentTest {
 
         fragment = CountriesFragment()
 
-        fragment.viewModelFactory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(CountriesViewModel::class.java)) {
-                    @Suppress("UNCHECKED_CAST")
-                    return viewModel as T
+        fragment.viewModelFactory =
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    if (modelClass.isAssignableFrom(CountriesViewModel::class.java)) {
+                        @Suppress("UNCHECKED_CAST")
+                        return viewModel as T
+                    }
+                    throw IllegalArgumentException("Unknown ViewModel class")
                 }
-                throw IllegalArgumentException("Unknown ViewModel class")
             }
-        }
 
         fragment.injectAdapter(adapter)
 
         val activity =
-            Robolectric.buildActivity(MainActivity::class.java).create().start().resume().get()
-        activity.supportFragmentManager.beginTransaction()
+            Robolectric
+                .buildActivity(MainActivity::class.java)
+                .create()
+                .start()
+                .resume()
+                .get()
+        activity.supportFragmentManager
+            .beginTransaction()
             .add(fragment, "test")
             .commitNow()
     }
@@ -139,7 +145,7 @@ class CountriesFragmentTest {
         // Ensure RecyclerView is properly laid out so scroll works
         recyclerView.measure(
             View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST)
+            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST),
         )
         recyclerView.layout(0, 0, 1080, 1920)
         shadowOf(Looper.getMainLooper()).idle()
@@ -161,7 +167,6 @@ class CountriesFragmentTest {
         assertThat(fab.visibility).isEqualTo(View.GONE)
     }
 
-
     @Test
     fun observeCountries_errorState_should_showErrorDialog() {
         // Spy on the fragment BEFORE adding it to activity
@@ -172,8 +177,14 @@ class CountriesFragmentTest {
 
         // Replace fragment reference with spy in the activity transaction
         val activity =
-            Robolectric.buildActivity(MainActivity::class.java).create().start().resume().get()
-        activity.supportFragmentManager.beginTransaction()
+            Robolectric
+                .buildActivity(MainActivity::class.java)
+                .create()
+                .start()
+                .resume()
+                .get()
+        activity.supportFragmentManager
+            .beginTransaction()
             .add(spiedFragment, "test")
             .commitNow()
 
@@ -189,7 +200,6 @@ class CountriesFragmentTest {
         assertThat(spiedFragment.binding.countryProgress.visibility).isEqualTo(View.GONE)
         assertThat(spiedFragment.binding.countryRV.visibility).isEqualTo(View.GONE)
     }
-
 
     @Test
     fun showCountries_should_setAdapter_and_revealRecyclerView() {
@@ -236,7 +246,6 @@ class CountriesFragmentTest {
         assertThat(fragment.binding.countryRV.visibility).isEqualTo(View.GONE)
     }
 
-
     @Test
     fun floatingButton_should_remain_visible_while_scrolling_down_continuously() {
         val countries = List(50) { Countries("Country $it") }
@@ -250,7 +259,7 @@ class CountriesFragmentTest {
         // Layout for scroll simulation
         recyclerView.measure(
             View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST)
+            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST),
         )
         recyclerView.layout(0, 0, 1080, 1920)
 
@@ -275,7 +284,7 @@ class CountriesFragmentTest {
 
         recyclerView.measure(
             View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST)
+            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST),
         )
         recyclerView.layout(0, 0, 1080, 1920)
 
@@ -285,14 +294,13 @@ class CountriesFragmentTest {
         assertThat(floatingButton.visibility).isEqualTo(View.VISIBLE)
 
         fragment.binding.swipeRefresh.isRefreshing = true
-        //assertTrue(isRefreshed)
-        //Espresso.onView(ViewMatchers.withId(R.id.country_RV)).perform(ViewActions.swipeDown())
+        // assertTrue(isRefreshed)
+        // Espresso.onView(ViewMatchers.withId(R.id.country_RV)).perform(ViewActions.swipeDown())
         // Scroll back up
         recyclerView.scrollBy(0, -500)
         shadowOf(Looper.getMainLooper()).idle()
         assertThat(floatingButton.visibility).isEqualTo(View.GONE)
     }
-
 
     @Test
     fun showErrorDialog_should_displayDialog_and_handleRetry() {
@@ -314,7 +322,6 @@ class CountriesFragmentTest {
         val shadowDialog = Shadows.shadowOf(latestDialog)
         assertEquals("Error", shadowDialog.title)
     }
-
 
     @Test
     fun floatingButton_click_should_scrollToTop() {
@@ -357,13 +364,13 @@ class CountriesFragmentTest {
 
         recyclerView.measure(
             View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST)
+            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST),
         )
         recyclerView.layout(0, 0, 1080, 1920)
 
         swipeRefresh.measure(
             View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST)
+            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.AT_MOST),
         )
         swipeRefresh.layout(0, 0, 1080, 1920)
 
@@ -458,13 +465,19 @@ class CountriesFragmentTest {
         val fab = fragment.binding.floatingButton
 
         // Setup test layout manager to intercept scroll call
-        val testLayoutManager = object : LinearLayoutManager(fragment.requireContext()) {
-            var scrollTo: Int = -1
-            override fun smoothScrollToPosition(rv: RecyclerView, state: RecyclerView.State?, position: Int) {
-                scrollTo = position
-                super.scrollToPosition(position)
+        val testLayoutManager =
+            object : LinearLayoutManager(fragment.requireContext()) {
+                var scrollTo: Int = -1
+
+                override fun smoothScrollToPosition(
+                    rv: RecyclerView,
+                    state: RecyclerView.State?,
+                    position: Int,
+                ) {
+                    scrollTo = position
+                    super.scrollToPosition(position)
+                }
             }
-        }
 
         recyclerView.layoutManager = testLayoutManager
 

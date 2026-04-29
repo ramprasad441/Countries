@@ -13,5 +13,5 @@ data class Countries(
     @SerializedName("language") var language: Language = Language(),
     @SerializedName("name") var name: String = "",
     @SerializedName("region") var region: String = "",
-    var header: String? = null
+    var header: String? = null,
 )
