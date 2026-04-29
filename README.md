@@ -3,6 +3,7 @@
 A sample Android app built with **Kotlin**, following **Clean Architecture** and **MVVM** pattern.  
 The app demonstrates modular design, separation of concerns, and best practices for testability and maintainability.
 
+[![Coverage](https://codecov.io/gh/ramprasad441/Countries/branch/main/graph/badge.svg)](https://codecov.io)
 ---
 
 ## 🧱 Architecture
@@ -48,8 +49,7 @@ This project follows **Clean Architecture** and **MVVM** with a clear separation
 
 - **Unit Tests**: Domain layer & ViewModels tested using `JUnit`, `MockK`, and `Truth`
 - **UI Tests**: Robolectric-based tests for activities & fragments
-- **Code Coverage**: JaCoCo integrated for unit test coverage reports
-
+- **Code Coverage**: Kover (Kotlin-native) with automated reporting, CI enforcement, and integration with Codecov & SonarQube
 Run tests:
 ```view coverage
 ./gradlew clean testDebugUnitTestCoverage

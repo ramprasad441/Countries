@@ -1,8 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
     kotlin("kapt")
-    id("jacoco")
+
+    id("org.jetbrains.kotlinx.kover")
+    id("org.sonarqube")
 }
 
 android {
@@ -24,55 +27,33 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlin {
         jvmToolchain(17)
 
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-            freeCompilerArgs.addAll(
-                "-Xjvm-default=all"
-            )
+            freeCompilerArgs.addAll("-Xjvm-default=all")
         }
     }
 
     buildFeatures {
         viewBinding = true
     }
+
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
-    testOptions {
-        unitTests.all {
-            it.extensions.configure(JacocoTaskExtension::class) {
-                isIncludeNoLocationClasses = true
-                excludes = listOf("jdk.internal.*")
-            }
-        }
-    }
 
-    sourceSets {
-        getByName("main") {
-            java.srcDirs("src/main/java")
-            res.srcDirs("src/main/res")
-        }
-        getByName("test") {
-            java.srcDirs("src/test/java")
-            res.srcDirs("src/test/res") // Ensure this line is present for unit tests
-        }
-        getByName("androidTest") {
-            java.srcDirs("src/androidTest/java")
-            res.srcDirs("src/androidTest/res") // For instrumented tests
-        }
-
-    }
 
     packaging {
         resources {
@@ -80,52 +61,66 @@ android {
             excludes += "/META-INF/LICENSE-notice.md"
         }
     }
+}
 
-
-
-    tasks.register<JacocoReport>("testDebugUnitTestCoverage") {
-        group = "coverage" // or "coverage", "reporting", etc.
-        description = "Generates code coverage report for the Debug unit tests using JaCoCo."
-        dependsOn("testDebugUnitTest") // Make sure this runs the tests first
-
-        reports {
-            xml.required.set(true)
-            html.required.set(true)
-        }
-
-        val fileFilter = listOf(
-            "**/R.class",
-            "**/R$*.class",
-            "**/BuildConfig.*",
-            "**/Manifest*.*",
-            "**/*Test*.*",
-            "**/model/**"
-        )
-
-        val debugTree = fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes")) {
-            exclude(fileFilter)
-        }
-
-        val kotlinDebugTree = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
-            exclude(fileFilter)
-        }
-
-        classDirectories.setFrom(debugTree, kotlinDebugTree)
-        sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
-        executionData.setFrom(
-            fileTree(layout.buildDirectory.get().asFile).include(
-                "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
-                "jacoco/testDebugUnitTest.exec"
-            )
-        )
-
-        doLast {
-            val reportFile = reports.html.outputLocation.get().asFile.resolve("index.html")
-            val fileUri = "file://${reportFile.absolutePath}"
-            println("Test coverage report available here:\n$fileUri")
+kover {
+    reports {
+        filters {
+            excludes {
+                classes(
+                    "*.databinding.*",
+                    "*R",
+                    "*R$*",
+                    "*BuildConfig*",
+                    "*Manifest*",
+                    "*Companion*",
+                    "*DefaultImpls*",
+                )
+            }
         }
     }
 }
+
+tasks.withType<Test>().configureEach {
+    if (name.contains("Release")) {
+        enabled = false
+    }
+}
+
+tasks.register("coverageCheck") {
+    group = "verification"
+    description = "Fails build if coverage is below 80%"
+
+    dependsOn("testDebugUnitTest", "koverXmlReport", "koverHtmlReport")
+
+    doLast {
+        val xml = file("build/reports/kover/report.xml")
+        val html = file("build/reports/kover/html/index.html")
+
+        val text = xml.readText()
+
+        val match = Regex("""<counter type="LINE" missed="(\d+)" covered="(\d+)"""")
+            .find(text)
+            ?: throw GradleException("Cannot parse coverage")
+
+        val missed = match.groupValues[1].toInt()
+        val covered = match.groupValues[2].toInt()
+
+        val total = missed + covered
+        val coverage = if (total > 0) covered * 100.0 / total else 0.0
+
+        println("📊 Coverage: %.2f%%".format(coverage))
+
+        if (html.exists()) {
+            println("📄 HTML: file://${html.absolutePath}")
+        }
+
+        if (coverage < 80) {
+            throw GradleException("Coverage below 80%")
+        }
+    }
+}
+
 
 java {
     toolchain {
@@ -134,8 +129,8 @@ java {
 }
 
 dependencies {
-    // --- Implementation dependencies ---
-    // AndroidX
+
+    // --- Implementation ---
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
@@ -144,55 +139,35 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.swiperefreshlayout)
-    implementation(libs.androidx.test.core.ktx)
-    implementation(libs.androidx.junit.ktx)
 
-    // Google
     implementation(libs.google.material)
 
-    // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
 
-    // OkHttp
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 
-    // Kotlinx
     implementation(libs.kotlinx.coroutines.core)
 
-
-    // --- Test Implementation dependencies ---
-    // JUnit & Truth
+    // --- Unit Test ---
     testImplementation(libs.junit)
     testImplementation(libs.truth)
-
-    // Espresso
     testImplementation(libs.androidx.espresso.core)
-
-    // AndroidX
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.androidxTestCore)
-
-    // MockK
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.agent)
-
-    // Kotlin
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.kotlintest)
-
-    // Robolectric
     testImplementation(libs.robolectric)
 
-
-    // --- Android Test Implementation dependencies ---
+    // --- Android Test ---
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.mockk.android)
 
-
-    // --- Debug Implementation dependencies ---
+    // --- Debug ---
     debugImplementation(libs.fragment.testing)
 }
