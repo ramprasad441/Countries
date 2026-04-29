@@ -10,9 +10,12 @@ import com.ramprasad.countries.domain.usecase.CountriesUseCase
  */
 class CountriesViewModelFactory(
     private val useCase: CountriesUseCase,
-    private val dispatcher: CoroutineDispatcherProvider
+    private val dispatcher: CoroutineDispatcherProvider,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return CountriesViewModel(useCase, dispatcher) as T
+        if (modelClass.isAssignableFrom(CountriesViewModel::class.java)) {
+            return CountriesViewModel(useCase, dispatcher) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }

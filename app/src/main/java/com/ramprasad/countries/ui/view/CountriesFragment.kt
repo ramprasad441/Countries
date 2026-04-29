@@ -1,7 +1,6 @@
 package com.ramprasad.countries.ui.view
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -142,24 +141,16 @@ class CountriesFragment : Fragment() {
         message: String,
         retry: () -> Unit,
     ) {
-        val retryAction =
-            DialogInterface.OnClickListener { dialog, _ ->
-                dialog.dismiss()
-                retry()
-            }
-
-        val dismissAction =
-            DialogInterface.OnClickListener { dialog, _ ->
-                dialog.dismiss()
-            }
-
         AlertDialog
             .Builder(requireContext())
             .setTitle("Error")
             .setMessage(message)
-            .setPositiveButton("Retry", retryAction)
-            .setNegativeButton("Dismiss", dismissAction)
-            .create()
+            .setPositiveButton("Retry") { dialog, _ ->
+                dialog.dismiss()
+                retry()
+            }.setNegativeButton("Dismiss") { dialog, _ ->
+                dialog.dismiss() // This will now turn green
+            }.create()
             .show()
     }
 
