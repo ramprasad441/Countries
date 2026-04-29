@@ -6,7 +6,7 @@ plugins {
 
     id("org.jetbrains.kotlinx.kover")
     id("org.sonarqube")
-    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
+    // id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
 android {

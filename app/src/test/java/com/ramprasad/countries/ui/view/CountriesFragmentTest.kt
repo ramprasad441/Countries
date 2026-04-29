@@ -488,4 +488,23 @@ class CountriesFragmentTest {
         // Assert scroll requested
         assertThat(testLayoutManager.scrollTo).isEqualTo(0)
     }
+
+    @Test
+    fun errorDialog_dismissButton_should_trigger_dismissAction_logic() {
+        // Arrange
+        val errorMessage = "Test error"
+        countriesLiveData.postValue(ResponseState.ERROR(Throwable(errorMessage)))
+        shadowOf(Looper.getMainLooper()).idle()
+
+        // Act
+        val dialog = ShadowAlertDialog.getLatestAlertDialog()
+        val shadowDialog = Shadows.shadowOf(dialog)
+
+        val dismissButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+
+        dismissButton.performClick()
+        shadowOf(Looper.getMainLooper()).idle()
+
+        assertFalse("Dialog should be dismissed after clicking Dismiss", dialog.isShowing)
+    }
 }
