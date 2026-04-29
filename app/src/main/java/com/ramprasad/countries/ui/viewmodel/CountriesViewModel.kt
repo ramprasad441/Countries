@@ -12,9 +12,8 @@ import kotlinx.coroutines.launch
  */
 class CountriesViewModel(
     val useCase: CountriesUseCase,
-    private val dispatcherProvider: CoroutineDispatcherProvider
+    private val dispatcherProvider: CoroutineDispatcherProvider,
 ) : ParentViewModel() {
-
     private val _countries: MutableLiveData<ResponseState> =
         MutableLiveData(ResponseState.LOADING())
     val countries: LiveData<ResponseState> get() = _countries

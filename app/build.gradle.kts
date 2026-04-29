@@ -6,6 +6,7 @@ plugins {
 
     id("org.jetbrains.kotlinx.kover")
     id("org.sonarqube")
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
 android {
@@ -54,7 +55,6 @@ android {
         unitTests.isIncludeAndroidResources = true
     }
 
-
     packaging {
         resources {
             excludes += "/META-INF/LICENSE.md"
@@ -99,9 +99,10 @@ tasks.register("coverageCheck") {
 
         val text = xml.readText()
 
-        val match = Regex("""<counter type="LINE" missed="(\d+)" covered="(\d+)"""")
-            .find(text)
-            ?: throw GradleException("Cannot parse coverage")
+        val match =
+            Regex("""<counter type="LINE" missed="(\d+)" covered="(\d+)"""")
+                .find(text)
+                ?: throw GradleException("Cannot parse coverage")
 
         val missed = match.groupValues[1].toInt()
         val covered = match.groupValues[2].toInt()
@@ -120,7 +121,6 @@ tasks.register("coverageCheck") {
         }
     }
 }
-
 
 java {
     toolchain {

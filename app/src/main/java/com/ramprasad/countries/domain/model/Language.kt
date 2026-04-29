@@ -7,5 +7,5 @@ import com.google.gson.annotations.SerializedName
  */
 data class Language(
     @SerializedName("code") var code: String = "",
-    @SerializedName("name") var name: String = ""
+    @SerializedName("name") var name: String = "",
 )

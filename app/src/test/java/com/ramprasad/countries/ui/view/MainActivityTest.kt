@@ -16,7 +16,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [29])
 class MainActivityTest {
-
     @Test
     fun `should add CountriesFragment and inject adapter`() {
         // Launch the activity
@@ -29,8 +28,9 @@ class MainActivityTest {
         Assert.assertEquals(R.id.CountryFragment, activity.binding.CountryFragment.id)
 
         // Get the fragment added
-        val fragment = activity.supportFragmentManager
-            .findFragmentById(R.id.CountryFragment)
+        val fragment =
+            activity.supportFragmentManager
+                .findFragmentById(R.id.CountryFragment)
 
         // Verify the fragment is instance of CountriesFragment
         Assert.assertTrue(fragment is CountriesFragment)
@@ -47,7 +47,8 @@ class MainActivityTest {
         val bundle = Bundle()
 
         // Simulate first launch and save state
-        Robolectric.buildActivity(MainActivity::class.java)
+        Robolectric
+            .buildActivity(MainActivity::class.java)
             .setup()
             .saveInstanceState(bundle)
             .pause()
@@ -55,21 +56,21 @@ class MainActivityTest {
             .destroy()
 
         // Recreate with savedInstanceState
-        val recreatedController = Robolectric.buildActivity(MainActivity::class.java)
-            .create(bundle)
-            .start()
-            .resume()
-            .visible()
+        val recreatedController =
+            Robolectric
+                .buildActivity(MainActivity::class.java)
+                .create(bundle)
+                .start()
+                .resume()
+                .visible()
 
         val recreatedActivity = recreatedController.get()
 
-        val fragment = recreatedActivity.supportFragmentManager
-            .findFragmentById(R.id.CountryFragment)
+        val fragment =
+            recreatedActivity.supportFragmentManager
+                .findFragmentById(R.id.CountryFragment)
 
         // Fragment should be present (restored by FragmentManager)
         Assert.assertTrue(fragment is CountriesFragment)
     }
-
-
-
 }

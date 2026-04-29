@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Created by Ramprasad on 7/27/25.
  */
-class CountriesUseCase(val remoteRepo: AllCountriesRepository) {
+class CountriesUseCase(
+    val remoteRepo: AllCountriesRepository,
+) {
     fun getAllCountries(): Flow<ResponseState> = remoteRepo.getAllCountries()
 }

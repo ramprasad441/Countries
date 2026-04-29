@@ -12,7 +12,6 @@ import kotlinx.coroutines.plus
 private const val TAG = "ParentViewModel"
 
 open class ParentViewModel : ViewModel() {
-
     protected val viewModelSafeScope by lazy {
         viewModelScope + coroutineExceptionHandler
     }
@@ -22,5 +21,4 @@ open class ParentViewModel : ViewModel() {
             Log.e(TAG, exception.localizedMessage, exception)
         }
     }
-
 }

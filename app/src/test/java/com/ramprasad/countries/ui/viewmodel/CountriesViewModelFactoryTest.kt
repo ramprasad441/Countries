@@ -12,7 +12,6 @@ import org.junit.Test
  * Created by Ramprasad on 7/8/25.
  */
 class CountriesViewModelFactoryTest {
-
     private lateinit var useCase: CountriesUseCase
     private lateinit var dispatcher: CoroutineDispatcherProvider
     private lateinit var factory: CountriesViewModelFactory
@@ -35,5 +34,4 @@ class CountriesViewModelFactoryTest {
         val viewModel = factory.create(CountriesViewModel::class.java)
         assertNotNull(viewModel)
     }
-
 }
