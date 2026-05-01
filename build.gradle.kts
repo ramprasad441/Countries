@@ -45,7 +45,11 @@ sonar {
 
         property(
             "sonar.coverage.jacoco.xmlReportPaths",
-            "app/build/reports/kover/report.xml",
+            "app/build/reports/kover/xml/report.xml",
+        )
+        property(
+            "sonar.exclusions",
+            "**/test/res/**, app/src/test/res/**, app/src/androidTest/res/**, **/R.java, **/R$*.java, **/BuildConfig.java, **/*Manifest*",
         )
         // For PR analysis - prevents looking for missing branches
         if (System.getenv("GITHUB_EVENT_NAME") == "pull_request") {
