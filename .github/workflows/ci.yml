@@ -2,7 +2,6 @@ name: Android CI
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened] # Ensure it triggers on every push to PR
   push:
     branches: [ "master" ]
 
@@ -25,17 +24,19 @@ jobs:
       - name: Cache Gradle
         uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e
 
+      # --- NEW STEP: KTLINT ---
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck
 
-      - name: Build + Lint + Test + Coverage + Sonar
-        run: >
-          ./gradlew clean ktlintCheck testDebugUnitTest koverXmlReport coverageCheck sonar
-          -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/kover/xml/report.xml
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # --- YOUR ORIGINAL STEPS ---
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest
 
-      - name: Verify Kover report exists
-        run: ls -R app/build/reports/kover || true
+      - name: Generate Kover report
+        run: ./gradlew koverXmlReport
+
+      - name: Coverage check (80% gate)
+        run: ./gradlew coverageCheck
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2
@@ -43,10 +44,10 @@ jobs:
           files: app/build/reports/kover/xml/report.xml
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-            
-            - name: SonarQube Scan
-              run: ./gradlew sonar
-              env:
-                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                SONAR_SCANNER_OPTS: "-Dsonar.token=${{ secrets.SONAR_TOKEN }}"
+
+      - name: SonarQube Scan
+        run: ./gradlew sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_SCANNER_OPTS: "-Dsonar.token=${{ secrets.SONAR_TOKEN }}"
