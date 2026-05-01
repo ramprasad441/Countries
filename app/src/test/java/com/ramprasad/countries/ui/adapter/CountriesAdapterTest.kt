@@ -1,4 +1,4 @@
-package com.ramprasad.countries.ui.view.adapter
+package com.ramprasad.countries.ui.adapter
 
 import android.content.Context
 import android.os.Build
@@ -13,9 +13,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.ramprasad.countries.databinding.CountriesHeaderListItemBinding
 import com.ramprasad.countries.databinding.CountriesListItemBinding
 import com.ramprasad.countries.domain.model.Countries
-import com.ramprasad.countries.ui.adapter.CountriesAdapter
 import com.ramprasad.countries.ui.adapter.CountriesAdapter.HeaderViewHolder
-import com.ramprasad.countries.ui.adapter.CountriesDiffCallback
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -23,7 +21,9 @@ import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.slot
 import io.mockk.spyk
+import io.mockk.unmockkAll
 import io.mockk.verify
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -46,6 +46,11 @@ class CountriesAdapterTest {
     @Before
     fun setUp() {
         adapter = CountriesAdapter()
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 
     @Test
@@ -130,65 +135,70 @@ class CountriesAdapterTest {
 
     @Test(expected = IllegalStateException::class)
     fun `onBindViewHolder throws for unknown view type`() {
-        val spyk = spyk(adapter)
-        every { spyk.getItemViewType(any()) } returns 99 // provoke else branch! }
-        every { spyk.getItemFromList(any()) } returns mockk()
+        val spy = spyk(adapter)
+        every { spy.getItemViewType(any()) } returns 99
+        every { spy.getItemFromList(any()) } returns mockk()
         val parent = FrameLayout(ApplicationProvider.getApplicationContext())
-        val holder = spyk.onCreateViewHolder(parent, 99)
-        spyk.onBindViewHolder(holder, 0) // Should throw and test will pass if error thrown
+        val holder = spy.onCreateViewHolder(parent, 99)
+        spy.onBindViewHolder(holder, 0)
+    }
+
+    @Test
+    fun `onBindViewHolder routes to correct view holders`() {
+        val spyAdapter = spyk(adapter)
+        val headerItem = Countries(header = "A")
+        val listItem = Countries(name = "France", code = "FR")
+
+        every { spyAdapter.getItemFromList(0) } returns headerItem
+        every { spyAdapter.getItemFromList(1) } returns listItem
+
+        val mockHeaderHolder = mockk<HeaderViewHolder>(relaxed = true)
+        val mockListItemHolder = mockk<CountriesAdapter.CountriesViewHolder>(relaxed = true)
+
+        spyAdapter.onBindViewHolder(mockHeaderHolder, 0)
+        verify { mockHeaderHolder.bind(headerItem) }
+
+        spyAdapter.onBindViewHolder(mockListItemHolder, 1)
+        verify { mockListItemHolder.bind(listItem) }
     }
 
     @Test
     fun `onBindViewHolder should bind HeaderViewHolder with header data`() {
-        val spyk = spyk(adapter)
+        val spy = spyk(adapter)
         val country = mockk<Countries>()
+
         every { country.header } returns "A"
-        every { spyk.getItemViewType(any()) } returns 0
-        every { spyk.getItemFromList(any()) } returns country
+        every { spy.getItemViewType(any()) } returns 0
+        every { spy.getItemFromList(any()) } returns country
+
         val parent = FrameLayout(ApplicationProvider.getApplicationContext())
-        val holder = spyk.onCreateViewHolder(parent, 0)
+        val holder = spy.onCreateViewHolder(parent, 0)
         assertTrue(holder is HeaderViewHolder)
+
         val headerViewHolder = holder as HeaderViewHolder
-        val spykHolder = spyk(headerViewHolder)
-        spyk.onBindViewHolder(spykHolder, 0)
-        verify { spykHolder.bind(country) }
+        val spyHolder = spyk(headerViewHolder)
+        spy.onBindViewHolder(spyHolder, 0)
+        verify { spyHolder.bind(country) }
     }
 
     @Test
-    fun `binds CountriesViewHolder with null values`() {
-        val country1 = Countries()
+    fun `CountriesViewHolder bind coverage with empty values`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val binding = CountriesListItemBinding.inflate(LayoutInflater.from(context), null, false)
+        val holder = CountriesAdapter.CountriesViewHolder(binding)
 
-        mockkStatic(LayoutInflater::class)
+        val country =
+            Countries(
+                name = "",
+                code = "",
+                region = "",
+                capital = "",
+            )
 
-        val parent = mockk<ViewGroup>()
-        val context = mockk<Context>()
-        val inflater = mockk<LayoutInflater>()
-        val mockItemBinding = mockk<CountriesListItemBinding>()
+        holder.bind(country)
 
-        val countryCode = mockk<TextView>(relaxed = true)
-        val region = mockk<TextView>(relaxed = true)
-        val countryName = mockk<TextView>(relaxed = true)
-        val countryCapital = mockk<TextView>(relaxed = true)
-
-        val mockCardView = mockk<CardView>(relaxed = true)
-        every { mockItemBinding.root } returns mockCardView
-        mockItemBinding.setPrivateField("countryCode", countryCode)
-        mockItemBinding.setPrivateField("region", region)
-        mockItemBinding.setPrivateField("countryName", countryName)
-        mockItemBinding.setPrivateField("countryCapital", countryCapital)
-
-        every { parent.context } returns context
-        every { LayoutInflater.from(context) } returns inflater
-
-        mockkStatic(CountriesListItemBinding::class)
-        every { CountriesListItemBinding.inflate(inflater, parent, false) } returns mockItemBinding
-
-        val sAdapter = spyk(adapter)
-        every { sAdapter.getItemFromList(any()) } returns country1
-        val countryHolder =
-            sAdapter.onCreateViewHolder(parent, 1) as CountriesAdapter.CountriesViewHolder
-
-        sAdapter.bindViewHolder(countryHolder, 1)
+        assertEquals("", binding.countryName.text.toString())
+        assertEquals("", binding.countryCode.text.toString())
     }
 
     @Test
@@ -196,16 +206,16 @@ class CountriesAdapterTest {
         val countries =
             Countries(name = "Albania", code = "AL", region = "Europe", capital = "Tirana")
 
-        val spyk = spyk(adapter)
-        every { spyk.getItemViewType(any()) } returns 1
-        every { spyk.getItemFromList(any()) } returns countries
+        val spy = spyk(adapter)
+        every { spy.getItemViewType(any()) } returns 1
+        every { spy.getItemFromList(any()) } returns countries
         val parent = FrameLayout(ApplicationProvider.getApplicationContext())
-        val holder = spyk.onCreateViewHolder(parent, 1)
+        val holder = spy.onCreateViewHolder(parent, 1)
         assertTrue(holder is CountriesAdapter.CountriesViewHolder)
         val headerViewHolder = holder as CountriesAdapter.CountriesViewHolder
-        val spykHolder = spyk(headerViewHolder)
-        spyk.onBindViewHolder(spykHolder, 0)
-        verify { spykHolder.bind(countries) }
+        val spyHolder = spyk(headerViewHolder)
+        spy.onBindViewHolder(spyHolder, 0)
+        verify { spyHolder.bind(countries) }
     }
 
     @Test
@@ -287,13 +297,20 @@ class CountriesAdapterTest {
         }
     }
 
-    private fun Any.setPrivateField(
-        field: String,
-        value: Any,
-    ) {
-        this::class.java.getDeclaredField(field).apply {
-            this.isAccessible = true
-            set(this@setPrivateField, value)
-        }
+    @Test
+    fun `HeaderViewHolder bind coverage - both branches`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val inflater = LayoutInflater.from(context)
+
+        val binding = CountriesHeaderListItemBinding.inflate(inflater, null, false)
+        val holder = HeaderViewHolder(binding)
+
+        val countryWithHeader = Countries(header = "Europe")
+        holder.bind(countryWithHeader)
+        assertEquals("Europe", binding.countryHeader.text.toString())
+
+        val countryWithNullHeader = Countries(header = null)
+        holder.bind(countryWithNullHeader)
+        assertEquals("", binding.countryHeader.text.toString())
     }
 }
