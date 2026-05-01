@@ -23,7 +23,7 @@ class CountriesViewModelFactoryTest {
     fun setUp() {
         useCase = mockk()
         dispatcher = CoroutineDispatcherProvider()
-        factory = CountriesViewModelFactory(useCase, dispatcher)
+                factory = CountriesViewModelFactory(useCase, dispatcher)
     }
 
     @Test
