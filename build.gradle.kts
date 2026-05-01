@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
 
     id("org.jetbrains.kotlinx.kover") version "0.9.8" apply false
-    id("org.sonarqube") version "7.2.3.7755"
+    id("org.sonarqube") version "7.3.0.8198"
 }
 
 sonar {
@@ -16,18 +16,18 @@ sonar {
         property(
             "sonar.exclusions",
             "**/test/res/**," +
-                    "app/src/test/res/**," +
-                    "app/src/androidTest/res/**," +
-                    "**/R.java," +
-                    "**/R$*.java," +
-                    "**/BuildConfig.java," +
-                    "**/*Manifest*"
+                "app/src/test/res/**," +
+                "app/src/androidTest/res/**," +
+                "**/R.java," +
+                "**/R$*.java," +
+                "**/BuildConfig.java," +
+                "**/*Manifest*",
         )
-        property ("sonar.sourceEncoding", "UTF-8")
+        property("sonar.sourceEncoding", "UTF-8")
 
         property(
             "sonar.coverage.jacoco.xmlReportPaths",
-            "app/build/reports/kover/report.xml"
+            "app/build/reports/kover/report.xml",
         )
         // For PR analysis - prevents looking for missing branches
         if (System.getenv("GITHUB_EVENT_NAME") == "pull_request") {
@@ -39,4 +39,3 @@ sonar {
 tasks.named("sonar") {
     dependsOn(":app:koverXmlReport")
 }
-

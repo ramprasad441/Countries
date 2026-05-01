@@ -10,12 +10,12 @@ plugins {
 
 android {
     namespace = "com.ramprasad.countries"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.ramprasad.countries"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -25,6 +25,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -54,11 +55,11 @@ android {
         unitTests.isIncludeAndroidResources = true
     }
 
-
     packaging {
         resources {
             excludes += "/META-INF/LICENSE.md"
             excludes += "/META-INF/LICENSE-notice.md"
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 }
@@ -99,9 +100,10 @@ tasks.register("coverageCheck") {
 
         val text = xml.readText()
 
-        val match = Regex("""<counter type="LINE" missed="(\d+)" covered="(\d+)"""")
-            .find(text)
-            ?: throw GradleException("Cannot parse coverage")
+        val match =
+            Regex("""<counter type="LINE" missed="(\d+)" covered="(\d+)"""")
+                .find(text)
+                ?: throw GradleException("Cannot parse coverage")
 
         val missed = match.groupValues[1].toInt()
         val covered = match.groupValues[2].toInt()
@@ -120,7 +122,6 @@ tasks.register("coverageCheck") {
         }
     }
 }
-
 
 java {
     toolchain {
