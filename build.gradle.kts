@@ -42,16 +42,16 @@ sonar {
                 "**/*Manifest*",
         )
         property("sonar.sourceEncoding", "UTF-8")
-        property("sonar.coverage.jacoco.xmlReportPaths", "app/build/reports/kover/report.xml")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${project.rootDir}/app/build/reports/kover/report.xml")
 
         property(
             "sonar.coverage.jacoco.xmlReportPaths",
-            "app/build/reports/kover/report.xml"
+            "app/build/reports/kover/report.xml",
         )
         // For PR analysis - prevents looking for missing branches
         if (System.getenv("GITHUB_EVENT_NAME") == "pull_request") {
             property("sonar.scm.forceReloadBranchConfiguration", "true")
-                    property("sonar.scm.provider", "git")
+            property("sonar.scm.provider", "git")
             property("sonar.pullrequest.base", "master")
         }
     }
