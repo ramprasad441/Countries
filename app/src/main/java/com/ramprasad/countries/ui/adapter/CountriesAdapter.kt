@@ -21,14 +21,17 @@ class CountriesAdapter : ListAdapter<Countries, RecyclerView.ViewHolder>(Countri
     ): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            0 ->
+            0 -> {
                 HeaderViewHolder(
                     CountriesHeaderListItemBinding.inflate(inflater, parent, false),
                 )
-            else ->
+            }
+
+            else -> {
                 CountriesViewHolder(
                     CountriesListItemBinding.inflate(inflater, parent, false),
                 )
+            }
         }
     }
 
