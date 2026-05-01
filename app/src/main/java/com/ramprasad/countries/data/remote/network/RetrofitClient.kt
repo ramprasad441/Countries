@@ -8,7 +8,6 @@ import retrofit2.http.GET
  * Created by Ramprasad on 7/6/25.
  */
 interface RetrofitClient {
-
     @GET(COUNTRIES_LIST)
     suspend fun getAllCountries(): Response<List<Countries>>
 

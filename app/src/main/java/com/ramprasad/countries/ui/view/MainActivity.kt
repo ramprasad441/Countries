@@ -7,7 +7,6 @@ import com.ramprasad.countries.databinding.ActivityMainBinding
 import com.ramprasad.countries.ui.adapter.CountriesAdapter
 
 class MainActivity : AppCompatActivity() {
-
     val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -17,11 +16,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if (savedInstanceState == null) {
-            val fragment = CountriesFragment().apply {
-                injectAdapter(CountriesAdapter())
-            }
+            val fragment =
+                CountriesFragment().apply {
+                    injectAdapter(CountriesAdapter())
+                }
 
-            supportFragmentManager.beginTransaction()
+            supportFragmentManager
+                .beginTransaction()
                 .replace(R.id.CountryFragment, fragment)
                 .commit()
         }
