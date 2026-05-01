@@ -43,10 +43,7 @@ sonar {
         )
         property("sonar.sourceEncoding", "UTF-8")
 
-        property(
-            "sonar.coverage.jacoco.xmlReportPaths",
-            "app/build/reports/kover/xml/report.xml",
-        )
+        property("sonar.coverage.jacoco.xmlReportPaths", "${project.rootDir}/app/build/reports/kover/report.xml")
         property(
             "sonar.exclusions",
             "**/test/res/**, app/src/test/res/**, app/src/androidTest/res/**, **/R.java, **/R$*.java, **/BuildConfig.java, **/*Manifest*",
