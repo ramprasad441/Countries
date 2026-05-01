@@ -2,6 +2,7 @@ name: Android CI
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened] # Ensure it triggers on every push to PR
   push:
     branches: [ "master" ]
 
@@ -24,12 +25,10 @@ jobs:
       - name: Cache Gradle
         uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e
 
-      - name: Run ktlint
-        run: ./gradlew ktlintCheck
 
-      - name: Build + Test + Coverage + Sonar
+      - name: Build + Lint + Test + Coverage + Sonar
         run: >
-          ./gradlew clean testDebugUnitTest koverXmlReport coverageCheck sonar
+          ./gradlew clean ktlintCheck testDebugUnitTest koverXmlReport coverageCheck sonar
           -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/kover/xml/report.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
