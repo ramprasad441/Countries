@@ -42,7 +42,6 @@ sonar {
                 "**/*Manifest*",
         )
         property("sonar.sourceEncoding", "UTF-8")
-        property("sonar.coverage.jacoco.xmlReportPaths", "${project.rootDir}/app/build/reports/kover/report.xml")
 
         property(
             "sonar.coverage.jacoco.xmlReportPaths",
