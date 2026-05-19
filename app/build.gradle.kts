@@ -1,14 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
 
     id("org.jetbrains.kotlinx.kover")
     id("org.sonarqube")
-    // id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
+// =========================================================================
+// CORRECT SETUP FOR AGP 9.0+
+// Built-in Kotlin requires compiler options to sit at the Project root level,
+// completely decoupled and separate from the android {} configuration block.
+// =========================================================================
 android {
     namespace = "com.ramprasad.countries"
     compileSdk = 37
@@ -39,15 +42,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        jvmToolchain(17)
-
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-            freeCompilerArgs.addAll("-Xjvm-default=all")
-        }
-    }
-
     buildFeatures {
         viewBinding = true
     }
@@ -62,6 +56,15 @@ android {
             excludes += "/META-INF/LICENSE-notice.md"
             excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        freeCompilerArgs.addAll("-Xjvm-default=all")
     }
 }
 
